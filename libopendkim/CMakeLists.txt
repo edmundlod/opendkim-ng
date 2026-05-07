@@ -248,11 +248,14 @@ if(MILTER_INCLUDE_DIR AND MILTER_LIBRARY)
     unset(CMAKE_REQUIRED_LIBRARIES)
 endif()
 
-# Check for st_node in struct stat (BSD)
+# Check for BSD socket structure member checks
 include(CheckStructHasMember)
 check_struct_has_member("struct stat" "st_node" "sys/stat.h" HAVE_ST_NODE)
-# ── Generate build-config.h ───────────────────────────────────────────────────
+check_struct_has_member("struct sockaddr_un"  sun_len  "sys/un.h"     HAVE_SUN_LEN)
+check_struct_has_member("struct sockaddr_in"  sin_len  "netinet/in.h" HAVE_SIN_LEN)
+check_struct_has_member("struct sockaddr_in6" sin6_len "netinet/in.h" HAVE_SIN6_LEN)
 
+# ── Generate build-config.h ───────────────────────────────────────────────────
 configure_file(
     build-config.h.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/build-config.h
