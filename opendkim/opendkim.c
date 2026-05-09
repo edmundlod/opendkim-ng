@@ -347,9 +347,6 @@ struct msgctx
 	dkim_canon_t	mctx_hdrcanon;		/* header canonicalization */
 	dkim_canon_t	mctx_bodycanon;		/* body canonicalization */
 	dkim_alg_t	mctx_signalg;		/* signature algorithm */
-#ifdef USE_UNBOUND
-	int		mctx_dnssec_key;	/* DNSSEC results for key */
-#endif /* USE_UNBOUND */
 	int		mctx_queryalg;		/* query algorithm */
 	int		mctx_hdrbytes;		/* header space allocated */
 	struct dkimf_dstring * mctx_tmpstr;	/* temporary string */
@@ -8029,9 +8026,6 @@ dkimf_initcontext(struct dkimf_config *conf)
 	ctx->mctx_bodycanon = conf->conf_bodycanon;
 	ctx->mctx_signalg = DKIM_SIGN_DEFAULT;
 	ctx->mctx_queryalg = DKIM_QUERY_DEFAULT;
-#ifdef USE_UNBOUND
-	ctx->mctx_dnssec_key = DKIM_DNSSEC_UNKNOWN;
-#endif /* USE_UNBOUND */
 
 	return ctx;
 }
@@ -9581,7 +9575,7 @@ dkimf_ar_all_sigs(char *hdr, size_t hdrlen, DKIM *dkim,
 				break;
 
 			  case DKIM_DNSSEC_INSECURE:
-				dnssec = "unprotected";
+				dnssec = "insecure";
 				if (conf->conf_unprotectedkey == DKIMF_KEYACTIONS_FAIL)
 				{
 					*status = DKIMF_STATUS_BAD;
@@ -9604,6 +9598,11 @@ dkimf_ar_all_sigs(char *hdr, size_t hdrlen, DKIM *dkim,
 					*status = DKIMF_STATUS_VERIFYERR;
 					result = "neutral";
 				}
+				syslog(LOG_WARNING,
+				       "%s: DNSSEC validation failed (bogus) for key record of signature from %s (selector %s); possible attack",
+				       dkim_getid(dkim),
+				       dkim_sig_getdomain(sigs[c]),
+				       dkim_sig_getselector(sigs[c]));
 				break;
 
 			  case DKIM_DNSSEC_SECURE:
@@ -12307,11 +12306,6 @@ mlfi_eom(SMFICTX *ctx)
 			}
 		}
 
-#ifdef USE_UNBOUND
-		sig = dkim_getsignature(dfc->mctx_dkimv);
-		if (sig != NULL)
-			dfc->mctx_dnssec_key = dkim_sig_getdnssec(sig);
-#endif /* USE_UNBOUND */
 
 		if (dfc->mctx_addheader)
 		{

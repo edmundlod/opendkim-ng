@@ -188,8 +188,9 @@ dkimf_unbound_cb(void *mydata, int err, struct ub_result *result)
 	}
 	else if (result->bogus)
 	{
-		/* result was bogus */
 		ubdata->ubd_result = DKIM_DNSSEC_BOGUS;
+		ub_resolve_free(result);
+		ubdata->ubd_done = TRUE;
 		return;
 	}
 	else
