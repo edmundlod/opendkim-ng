@@ -125,7 +125,8 @@ opendkim-genkey -t ed25519 -d domain.com -s selector
 ## Documentation
 
 Man pages are installed for `opendkim(8)`, `opendkim.conf(5)`,
-`opendkim-genkey(8)`, `opendkim-testkey(8)`, and `opendkim-genzone(8)`.
+`opendkim-genkey(8)`, `opendkim-genzone(8)`, `opendkim-testkey(8)`,
+`opendkim-testmsg(8)`, and `opendkim-lua(3)`.
 
 RFC and draft reference documents are in the `docs/` directory.
 
