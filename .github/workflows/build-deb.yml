@@ -17,11 +17,19 @@ env:
 
 jobs:
   build-deb:
-    name: Build Debian package
+    name: Build Debian package (${{ matrix.codename }})
     runs-on: ubuntu-24.04
 
+    strategy:
+      matrix:
+        include:
+          - image: debian:bookworm
+            codename: bookworm
+          - image: debian:trixie
+            codename: trixie
+
     container:
-      image: debian:12
+      image: ${{ matrix.image }}
 
     permissions:
       contents: write
@@ -77,17 +85,22 @@ jobs:
       - name: Collect build artifacts
         run: |
           mkdir -p dist
-
           mv ../*.deb dist/ || true
           mv ../*.changes dist/ || true
           mv ../*.buildinfo dist/ || true
 
-          ls -lah dist/
+      - name: Prefix artifacts with codename
+        run: |
+          cd dist
+          for f in *; do
+            mv "$f" "${{ matrix.codename }}_${f}"
+          done
+          ls -lah
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: debs
+          name: debs-${{ matrix.codename }}
           path: dist/
 
       - name: Upload release artifacts
@@ -108,5 +121,5 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.REPO_DISPATCH_APT_AND_RPM }}" \
               -H "Accept: application/vnd.github+json" \
               https://api.github.com/repos/edmundlod/apt/dispatches \
-              -d "{\"event_type\":\"package-built\",\"client_payload\":{\"deb_url\":\"${url}\",\"package\":\"${pkg}\"}}"
+              -d "{\"event_type\":\"package-built\",\"client_payload\":{\"deb_url\":\"${url}\",\"package\":\"${pkg}\",\"codename\":\"${{ matrix.codename }}\"}}"
           done
