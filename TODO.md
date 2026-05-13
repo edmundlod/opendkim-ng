@@ -68,6 +68,18 @@ are worth implementing. Design first, then implement.
 
 ========================
 
+USE_REDIS not reported in `opendkim -V` output. The `-V` code in opendkim/opendkim.c
+has `#ifdef` blocks for USE_LUA, USE_MDB, USE_UNBOUND but none for USE_REDIS.
+Add a `#ifdef USE_REDIS` printf to the version output so Redis support is visible.
+
+========================
+
+Configure COPR for RPM builds (Fedora/RHEL/CentOS/AlmaLinux).
+Set up a .spec file and wire the CI to dispatch to COPR on tag push,
+similar to the Debian apt dispatch step.
+
+========================
+
 Go through all the issues at https://github.com/trusteddomainproject/OpenDKIM/issues and see if any apply to our version.
 
 Also look at distro's (Fedora, OpenSUSE, Debian, Gentoo, e.a.) that might have created their own patches. Something useful for us?
