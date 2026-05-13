@@ -1,3 +1,9 @@
+opendkim-ng (3.0.0~beta10-ng1) unstable; urgency=medium
+
+  * CI: Fix YAML syntax in apt dispatch step
+
+ -- Edmund Lodewijks <edmund@proteamail.com>  Thu, 14 May 2026 00:00:00 +0200
+
 opendkim-ng (3.0.0~beta9-ng1) unstable; urgency=medium
 
   * CI: Batch apt dispatch — one event per codename, all packages in one run
