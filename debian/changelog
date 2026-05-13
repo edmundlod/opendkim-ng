@@ -1,3 +1,14 @@
+opendkim-ng (3.0.0~beta6-ng1) unstable; urgency=medium
+
+  * CI: Fix build dependencies (libbsd-dev, libevent-dev, nettle-dev,
+    libhiredis-dev)
+  * CI: Enable Redis/hiredis in deb build
+  * CI: Publish .deb packages to apt repository on tag push
+  * Build: Drop unused VERSION_STRING and -DVERSION cmake defines
+  * Build: Fix t-db-redis link (add opendkim-lua.c)
+
+ -- Edmund Lodewijks <edmund@proteamail.com>  Wed, 13 May 2026 21:30:00 +0200
+
 opendkim-ng (3.0.0~beta5-ng1) unstable; urgency=medium
 
   * Rename and move sample configuration to /usr/share/doc/opendkim-ng/
