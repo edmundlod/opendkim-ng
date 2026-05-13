@@ -554,15 +554,9 @@ _Bool reload;					/* reload requested */
 _Bool no_i_whine;				/* noted ${i} is undefined */
 _Bool testmode;					/* test mode */
 _Bool allowdeprecated;				/* allow deprecated config values */
-#ifdef QUERY_CACHE
-_Bool querycache;				/* local query cache */
-#endif /* QUERY_CACHE */
 _Bool die;					/* global "die" flag */
 int diesig;					/* signal to distribute */
 int thread_count;				/* thread count */
-#ifdef QUERY_CACHE
-time_t cache_lastlog;				/* last cache stats logged */
-#endif /* QUERY_CACHE */
 char *progname;					/* program name */
 char *sock;					/* listening socket */
 char *conffile;					/* configuration file */
@@ -7317,13 +7311,6 @@ dkimf_config_setlib(struct dkimf_config *conf, char **err)
 	opts |= (DKIM_LIBFLAGS_ACCEPTV05 | DKIM_LIBFLAGS_DROPSIGNER);
 	if (conf->conf_weaksyntax)
 		opts |= DKIM_LIBFLAGS_BADSIGHANDLES;
-#ifdef QUERY_CACHE
-	if (querycache)
-	{
-		opts |= DKIM_LIBFLAGS_CACHE;
-		(void) time(&cache_lastlog);
-	}
-#endif /* QUERY_CACHE */
 	(void) dkim_options(lib, DKIM_OP_SETOPT, DKIM_OPTS_FLAGS,
 	                    &opts, sizeof opts);
 
@@ -12690,41 +12677,6 @@ mlfi_close(SMFICTX *ctx)
 		dkimf_setpriv(ctx, NULL);
 	}
 
-#ifdef QUERY_CACHE
-	if (querycache)
-	{
-		time_t now;
-
-		(void) time(&now);
-		if (cache_lastlog + CACHESTATSINT < now)
-		{
-			u_int c_hits;
-			u_int c_queries;
-			u_int c_expired;
-			u_int c_pct;
-			u_int c_keys;
-
-			dkim_getcachestats(cc->cctx_config->conf_libopendkim,
-			                   &c_queries, &c_hits, &c_expired,
-			                   &c_keys, FALSE);
-
-			cache_lastlog = now;
-
-			if (c_queries == 0)
-				c_pct = 0;
-			else
-				c_pct = (c_hits * 100) / c_queries;
-
-			syslog(LOG_INFO,
-			       "cache: %u quer%s, %u hit%s (%d%%), %u expired, %u key%s",
-			       c_queries, c_queries == 1 ? "y" : "ies",
-			       c_hits, c_hits == 1 ? "" : "s",
-			       c_pct, c_expired,
-			       c_keys, c_keys == 1 ? "" : "s");
-		}
-	}
-#endif /* QUERY_CACHE */
-
 	return SMFIS_CONTINUE;
 }
 
@@ -12863,9 +12815,6 @@ main(int argc, char **argv)
 	/* initialize */
 	reload = FALSE;
 	testmode = FALSE;
-#ifdef QUERY_CACHE
-	querycache = FALSE;
-#endif /* QUERY_CACHE */
 	sock = NULL;
 #ifdef POPAUTH
 	popdb = NULL;
@@ -13539,11 +13488,6 @@ main(int argc, char **argv)
 			(void) config_get(cfg, "PidFile", &pidfile,
 			                  sizeof pidfile);
 		}
-
-#ifdef QUERY_CACHE
-		(void) config_get(cfg, "QueryCache", &querycache,
-		                  sizeof querycache);
-#endif /* QUERY_CACHE */
 
 		(void) config_get(cfg, "UMask", &filemask, sizeof filemask);
 
