@@ -26,5 +26,9 @@ target_link_libraries(miltertest PRIVATE
     ${LUA_LIBRARIES}
 )
 
+if(BSD_LIBRARY)
+    target_link_libraries(miltertest PRIVATE ${BSD_LIBRARY})
+endif()
+
 install(TARGETS miltertest DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES miltertest.8 DESTINATION ${CMAKE_INSTALL_MANDIR}/man8)
