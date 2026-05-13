@@ -102,7 +102,7 @@ jobs:
         if: github.ref_type == 'tag'
         run: |
           for deb in dist/*.deb; do
-            pkg=$(basename "$deb")
+            pkg=$(basename "$deb" | tr '~' '.')
             url="https://github.com/edmundlod/opendkim-ng/releases/download/${{ github.ref_name }}/${pkg}"
             curl -s -X POST \
               -H "Authorization: Bearer ${{ secrets.REPO_DISPATCH_APT_AND_RPM }}" \
