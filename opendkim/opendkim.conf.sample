@@ -697,6 +697,14 @@ Syslog			Yes
 
 # SyslogFacility	mail
 
+##  SyslogName		name
+##  	default "opendkim"
+##
+##  Set the syslog identity.  Useful when running multiple instances
+##  to distinguish them in log output.
+
+# SyslogName		opendkim
+
 ##  SyslogSuccess { yes | no }
 ##  	default "no"
 ##
