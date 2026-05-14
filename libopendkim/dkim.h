@@ -914,6 +914,8 @@ extern unsigned char *dkim_sig_getselector __P((DKIM_SIGINFO *sig));
 
 extern unsigned char *dkim_sig_getdomain __P((DKIM_SIGINFO *sig));
 
+extern unsigned char *dkim_sig_getalgorithm __P((DKIM_SIGINFO *sig));
+
 /*
 **  DKIM_SIG_GETCANONS -- retrieve canonicaliztions after verifying
 **

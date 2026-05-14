@@ -9368,8 +9368,9 @@ dkimf_ar_all_sigs(char *hdr, size_t hdrlen, DKIM *dkim,
 		char *result;
 		char *dnssec;
 		char *domain;
+		char *selector;
+		char *algorithm;
 		char ss[BUFRSZ + 1];
-		char tmp[BUFRSZ + 1];
 		char val[MAXADDRESS + 1];
 		char comment[BUFRSZ + 1];
 
@@ -9496,6 +9497,8 @@ dkimf_ar_all_sigs(char *hdr, size_t hdrlen, DKIM *dkim,
 									val, sizeof val - 1);
 
 			domain = dkim_sig_getdomain(sigs[c]);
+			selector = dkim_sig_getselector(sigs[c]);
+			algorithm = dkim_sig_getalgorithm(sigs[c]);
 
 			#define APPEND(...) do {                            \
 			if (n >= hdrlen)                                    \
@@ -9518,13 +9521,13 @@ dkimf_ar_all_sigs(char *hdr, size_t hdrlen, DKIM *dkim,
 				n += r;                                         \
 			} while (0)
 
-			APPEND("%s%sdkim=%s%s (%u-bit key%s%s) header.d=%s header.i=%s%s%s",
+			APPEND("%s%sdkim=%s%s (%u-bit key%s%s) header.d=%s header.i=%s header.a=%s header.s=%s%s%s",
 				c == 0 ? "" : ";",
 				DELIMITER, result, comment,
 				keybits,
 				dnssec == NULL ? "" : "; ",
 				dnssec == NULL ? "" : dnssec,
-				domain, val,
+				domain, val, algorithm, selector,
 				ts == DKIM_STAT_OK ? " header.b=" : "",
 				ts == DKIM_STAT_OK ? ss : "");
 
