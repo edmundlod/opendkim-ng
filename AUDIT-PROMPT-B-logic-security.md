@@ -17,6 +17,66 @@ Do not modify any source files.  Produce only findings, as described below.
 
 ---
 
+## Token budget and resume instructions
+
+**This audit is long.** If you approach your output token limit mid-audit:
+
+1. Stop cleanly at the **end of the current section** — do not write a partial
+   section.
+2. Write all findings completed so far in the output format below.
+3. End with an **Audit State block** (format specified at the bottom of this
+   prompt) listing which sections are done, which are pending, and any
+   cross-file threads you were tracking that have not yet been resolved.
+4. Do not summarise or abbreviate findings already written — write them in full.
+
+The findings document and Audit State block together must be sufficient for a
+**clean resume in a new session on a different machine**, with no access to
+this session's context.  To resume: start a new Claude Code session, paste
+this prompt, paste the findings so far, paste the Audit State block, and
+instruct Claude to continue from the next pending section without
+re-examining anything already marked SAFE, FIXED, or VULNERABLE.
+
+---
+
+## Read and reasoning discipline
+
+**Read discipline**: Read each file completely top-to-bottom before writing
+any findings. Do not grep for section targets before reading the full file.
+Build a mental model of data flow first.
+
+**What to look for**: Logic errors and protocol violations, not buffer
+arithmetic. Focus on what the code *decides*, not how memory is managed.
+
+**Cross-path discipline**: For every validation check found, explicitly ask:
+does this exist in BOTH the inbound verification path AND the outbound signing
+path? Asymmetric validation (present in one, absent in the other) is a
+finding. Do not assume symmetry.
+
+**Absence findings**: A missing check is as reportable as a present bug.
+If a timestamp comparison, character-set filter, or DNSSEC rejection is
+expected by the protocol but absent in the code, report it even if no
+explicit TODO comment marks it.
+
+**Threading**: When reading shared-state access, note whether conf_lock is
+held. Absence of a lock around a curconf read is evidence, not an assumption.
+
+**Lua sandboxing**: Enumerate what is present, not just what is missing.
+List every library opened, then flag the dangerous ones.
+
+**Status discipline**: Every section must conclude with one of:
+VULNERABLE / FIXED / UNCERTAIN / SAFE — with the specific file:line that
+determines the verdict.
+
+**File reading order is mandatory**: Read files in the sequence listed.
+Do not skip ahead to a target function before reading earlier files in
+the list — call relationships only make sense in the order caller → callee.
+
+**Do not re-examine**: Anything already marked SAFE, FIXED, or VULNERABLE in
+a findings document passed to you at resume time is settled. Do not re-read
+those sections or re-derive those verdicts.
+
+---
+
 ## What is already known / fixed
 
 Do not re-report these:
@@ -244,3 +304,42 @@ evidence (line numbers) so the next auditor does not re-examine them.
 
 At the end, write a one-paragraph summary of the overall protocol-logic security
 posture and the top two or three actionable recommendations.
+
+Finally, write all findings out to a file named `AUDIT-FINDINGS-B-logic-security.md`
+in the root of the repository.
+
+---
+
+## Audit State block (write this if stopping early)
+
+If you stop before completing all eight sections, append the following block
+after your findings.  It must be self-contained — a new session on a different
+machine must be able to resume from it with no other context.
+
+```
+## AUDIT STATE — resume point
+
+**Prompt**: AUDIT-PROMPT-B-logic-security.md
+**Codebase snapshot**: [git commit hash or "unknown"]
+**Sections completed**: [list, e.g. 1, 2, 3]
+**Sections pending**: [list, e.g. 4, 5, 6, 7, 8]
+
+**Verdicts so far** (one line each — do not re-examine these):
+- Section 1: [VERDICT] — [one-line summary]
+- Section 2: [VERDICT] — [one-line summary]
+- ...
+
+**Open threads** (cross-file questions not yet resolved):
+- [describe any data-flow or call-chain question you were mid-way through]
+- [e.g. "conf_lock audit in opendkim.c partially complete — mlfi_connect and
+   mlfi_envfrom checked (unlocked reads of curconf confirmed), mlfi_eoh not
+   yet checked"]
+
+**Files read so far**: [list]
+**Files not yet read**: [list]
+
+**Resume instruction**: Start a new Claude Code session with `claude --model opus`.
+Paste AUDIT-PROMPT-B-logic-security.md, then this Audit State block, then the
+findings above. Instruct Claude to continue from Section [N], reading only the
+files not yet read, and not to re-examine any verdict listed above.
+```

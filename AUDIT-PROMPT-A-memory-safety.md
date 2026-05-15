@@ -1,14 +1,24 @@
 # Security Audit Prompt A — C Memory Safety
 
-## Task
+**Task**: Read-only memory-safety audit. Do NOT modify any source files.
 
-Perform a thorough C memory-safety audit of the opendkim-ng codebase.
-This is an **internet-facing milter daemon** that processes every inbound
-and outbound email on a mail server.  Any crafted email can exercise the
-DKIM verification path.  The code is written in older style C and is
-supposed to be hostile-input-safe.
+**Model guidance**: Use maximum reasoning depth. This is adversarial analysis
+of internet-facing C code. Treat all untrusted inputs as attacker-controlled.
 
-Do not modify any source files.  Produce only findings, as described below.
+**Audit discipline**:
+- Read each file completely before reporting findings for it
+- Trace pointer arithmetic fully before concluding safe/unsafe
+- For every SAFE verdict, explain the specific bound that prevents exploitation
+- For integer overflow checks, verify wrap behavior at SIZE_MAX, not just
+  typical values
+- Cross-file findings (e.g. value assigned in dkim.c, used in dkim-keys.c)
+  must cite both files and line numbers
+  
+**Code reading discipline**
+Read source files top-to-bottom before searching. Identify function boundaries,
+shared state, and call relationships before forming any finding. Do not grep
+for a pattern before you have read the surrounding context. Grep is a last
+resort for locating a known symbol, not a substitute for reading.
 
 ---
 
