@@ -108,7 +108,13 @@ dkim_get_key_dns(DKIM *dkim, DKIM_SIGINFO *sig, u_char *buf, size_t buflen)
 
 	/* see if there's a simulated reply queued; if so, use it */
 	anslen = dkim_test_dns_get(dkim, ansbuf, sizeof ansbuf);
-	if (anslen == -1)
+	/*
+	**  dkim_test_dns_get() returns size_t but documents -1 as the "no
+	**  reply queued" sentinel; that converts to SIZE_MAX, so compare
+	**  against (size_t) -1 rather than a bare -1 to silence
+	**  -Wsign-compare.
+	*/
+	if (anslen == (size_t) -1)
 	{
 		anslen = sizeof ansbuf;
 
