@@ -4338,7 +4338,9 @@ dkimf_loadkey(char *buf, size_t *buflen, _Bool *insecure, char *error,
 		rlen = read(fd, buf, *buflen);
 		close(fd);
 
-		if (rlen < *buflen)
+		/* read() returns -1 on error; treat short reads (or any
+		 * negative rlen) as failure rather than silently casting */
+		if (rlen < 0 || (size_t) rlen < *buflen)
 			return FALSE;
 	}
 
@@ -9393,8 +9395,13 @@ dkimf_ar_all_sigs(char *hdr, size_t hdrlen, DKIM *dkim,
 					         " reason=\"%s\"", err);
 				}
 			}
-			else if (sigerror != DKIM_SIGERROR_UNKNOWN &&
-			         sigerror != DKIM_SIGERROR_OK)
+			/*
+			**  dkim_sig_geterror() returns int while the sentinel
+			**  macros are u_int (see dkim.h); cast locally to keep
+			**  the compare u_int == u_int.
+			*/
+			else if ((u_int) sigerror != DKIM_SIGERROR_UNKNOWN &&
+			         (u_int) sigerror != DKIM_SIGERROR_OK)
 			{
 				result = "permerror";
 			}
@@ -12198,7 +12205,15 @@ mlfi_eom(SMFICTX *ctx)
 					}
 					else if (conf->conf_sigmintype == SIGMIN_MAXADD)
 					{
-						if (canonlen + conf->conf_sigmin < bodylen)
+						/*
+						**  canonlen/bodylen are ssize_t
+						**  with -1 as the "unset"
+						**  sentinel; guard before
+						**  casting to size_t.
+						*/
+						if (canonlen >= 0 && bodylen >= 0 &&
+						    (size_t) canonlen + conf->conf_sigmin <
+						    (size_t) bodylen)
 							dfc->mctx_status = DKIMF_STATUS_PARTIAL;
 					}
 					else
@@ -12206,9 +12221,11 @@ mlfi_eom(SMFICTX *ctx)
 						size_t required;
 
 						required = MIN(conf->conf_sigmin,
-						               bodylen);
+						               (size_t) bodylen);
 
-						if (canonlen < required)
+						/* same guard as MAXADD above */
+						if (canonlen >= 0 &&
+						    (size_t) canonlen < required)
 							dfc->mctx_status = DKIMF_STATUS_PARTIAL;
 					}
 				}
