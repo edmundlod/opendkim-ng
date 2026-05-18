@@ -47,7 +47,6 @@ main(int argc, char **argv)
 	DKIM *dkim;
 	DKIM_LIB *lib;
 	dkim_sigkey_t key;
-	unsigned char hdr[MAXHEADER + 1];
 
 	printf("*** relaxed/relaxed rsa-sha1 signing with a phony/extra From\n");
 

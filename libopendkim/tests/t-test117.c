@@ -57,7 +57,6 @@ main(int argc, char **argv)
 	DKIM_STAT status;
 	DKIM *dkim;
 	DKIM_LIB *lib;
-	char **testarray;
 	dkim_query_t qtype = DKIM_QUERY_FILE;
 	unsigned char hdr[MAXHEADER + 1];
 	char path[MAXPATHLEN + 1];

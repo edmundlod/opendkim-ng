@@ -712,7 +712,6 @@ test_rfc6376_s3_5_version_must_be_1(void)
 	DKIM *dkim;
 	DKIM_LIB *lib;
 	DKIM_SIGINFO *sig;
-	dkim_query_t qtype = DKIM_QUERY_FILE;
 	unsigned char hdr[MAXHEADER + 1];
 
 #define SIG_BADVERSION "v=2; a=rsa-sha1; c=simple/simple; d=example.com; " \
@@ -1247,7 +1246,6 @@ test_rfc6376_s5_4_from_must_be_signed(void)
 	DKIM *dkim;
 	DKIM_LIB *lib;
 	dkim_sigkey_t key;
-	DKIM_SIGINFO *sig;
 	unsigned char hdr[MAXHEADER + 1];
 
 	printf("  RFC6376 5.4: From: header MUST be signed\n");

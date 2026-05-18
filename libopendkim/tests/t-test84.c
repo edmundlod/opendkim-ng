@@ -57,7 +57,6 @@ main(int argc, char **argv)
 #ifdef TEST_KEEP_FILES
 	u_int flags;
 #endif /* TEST_KEEP_FILES */
-	int presult;
 	DKIM_STAT status;
 	dkim_query_t qtype = DKIM_QUERY_FILE;
 	DKIM *dkim;
