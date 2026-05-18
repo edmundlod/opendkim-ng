@@ -1762,7 +1762,7 @@ DKIM_STAT
 dkim_siglist_setup(DKIM *dkim)
 {
 	_Bool bsh;
-	int c;
+	u_int c;
 	int hashtype = DKIM_HASHTYPE_UNKNOWN;
 	int hstatus;
 	size_t b64siglen;
@@ -1802,7 +1802,7 @@ dkim_siglist_setup(DKIM *dkim)
 		                                    sizeof(DKIM_SIGINFO));
 		if (dkim->dkim_siglist[c] == NULL)
 		{
-			int n;
+			u_int n;
 
 			dkim_error(dkim,
 			           "unable to allocate %d byte(s)",
@@ -2671,7 +2671,7 @@ dkim_get_key(DKIM *dkim, DKIM_SIGINFO *sig, _Bool test)
 	_Bool gotset = FALSE;			/* set parsed */
 	_Bool gotreply = FALSE;			/* reply received */
 	int status;
-	int c;
+	u_int c;
 	DKIM_SIGINFO *osig;
 	struct dkim_set *set = NULL;
 	struct dkim_set *nextset;
@@ -3255,7 +3255,7 @@ dkim_eoh_verify(DKIM *dkim)
 	_Bool tmp;
 	_Bool bsh;
 	DKIM_STAT status;
-	int c;
+	u_int c;
 	DKIM_LIB *lib;
 	DKIM_SET *set;
 
@@ -3509,7 +3509,7 @@ dkim_eom_sign(DKIM *dkim)
 	if (dkim->dkim_resign != NULL)
 	{
 		_Bool found = FALSE;
-		int c;
+		u_int c;
 		char *hn;
 
 		/*
@@ -3858,7 +3858,7 @@ static DKIM_STAT
 dkim_eom_verify(DKIM *dkim, _Bool *testkey)
 {
 	DKIM_STAT ret;
-	int c;
+	u_int c;
 	int status;
 	DKIM_SIGINFO *sig = NULL;
 	struct dkim_header *hdr;
@@ -4775,7 +4775,7 @@ dkim_free(DKIM *dkim)
 	/* trash the signature list */
 	if (dkim->dkim_siglist != NULL)
 	{
-		int c;
+		u_int c;
 
 		for (c = 0; c < dkim->dkim_sigcount; c++)
 		{
@@ -5607,7 +5607,7 @@ dkim_ohdrs(DKIM *dkim, DKIM_SIGINFO *sig, u_char **ptrs, int *pcnt)
 	/* pick the one we're going to use */
 	if (sig == NULL)
 	{
-		int c;
+		u_int c;
 
 		for (c = 0; c < dkim->dkim_sigcount; c++)
 		{
