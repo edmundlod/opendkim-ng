@@ -538,7 +538,7 @@ sfsistat dkimf_chgheader __P((SMFICTX *, char *, int, char *));
 static void dkimf_cleanup __P((SMFICTX *));
 static void dkimf_config_reload __P((void));
 sfsistat dkimf_delrcpt __P((SMFICTX *, char *));
-static Header dkimf_findheader __P((msgctx, char *, int));
+static Header dkimf_findheader __P((msgctx, const char *, int));
 void *dkimf_getpriv __P((SMFICTX *));
 char *dkimf_getsymval __P((SMFICTX *, char *));
 sfsistat dkimf_insheader __P((SMFICTX *, int, char *, char *));
@@ -1741,7 +1741,7 @@ dkimf_xs_replaceheader(lua_State *l)
 		return 1;
 	}
 
-	hdr = dkimf_findheader(dfc, (char *) hdrname, idx);
+	hdr = dkimf_findheader(dfc, hdrname, idx);
 	if (hdr == NULL)
 	{
 		lua_pushnil(l);
@@ -1889,7 +1889,7 @@ dkimf_xs_getheader(lua_State *l)
 		return 1;
 	}
 
-	hdr = dkimf_findheader(dfc, (char *) hdrname, idx);
+	hdr = dkimf_findheader(dfc, hdrname, idx);
 	if (hdr == NULL)
 	{
 		lua_pushnil(l);
@@ -8391,7 +8391,7 @@ dkimf_libstatus(SMFICTX *ctx, DKIM *dkim, char *where, int status)
 */
 
 static Header
-dkimf_findheader(msgctx dfc, char *hname, int instance)
+dkimf_findheader(msgctx dfc, const char *hname, int instance)
 {
 	Header hdr;
 
@@ -9117,7 +9117,7 @@ dkimf_sigreport(connctx cc, struct dkimf_config *conf, char *hostname)
 #endif /* AF_INET6 */
 	}
 
-	hdr = dkimf_findheader(dfc, (char *) "Message-ID", 0);
+	hdr = dkimf_findheader(dfc, "Message-ID", 0);
 
 	fprintf(out, "--dkimreport/%s/%s\n", hostname, dfc->mctx_jobid);
 	fprintf(out, "Content-Type: message/feedback-report\n");
