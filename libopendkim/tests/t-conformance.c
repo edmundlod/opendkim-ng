@@ -2392,10 +2392,13 @@ test_rfc8463_ed25519_roundtrip(void)
 	lib = make_lib();
 	set_fixed_time(lib, 1528637909);
 
-	sign_dkim = dkim_sign(lib, JOBID, NULL, (dkim_sigkey_t) RFC8463_ED_PRIVKEY_PEM,
-	                      RFC8463_ED_SEL, RFC8463_DOMAIN,
-	                      DKIM_CANON_RELAXED, DKIM_CANON_RELAXED,
-	                      DKIM_SIGN_ED25519SHA256, -1L, &status);
+	{
+		unsigned char privkey[] = RFC8463_ED_PRIVKEY_PEM;
+		sign_dkim = dkim_sign(lib, JOBID, NULL, privkey,
+		                      RFC8463_ED_SEL, RFC8463_DOMAIN,
+		                      DKIM_CANON_RELAXED, DKIM_CANON_RELAXED,
+		                      DKIM_SIGN_ED25519SHA256, -1L, &status);
+	}
 	CHECK(sign_dkim != NULL, "ed25519 dkim_sign returned NULL");
 
 	feed_standard_headers(sign_dkim);
@@ -2458,10 +2461,13 @@ test_rfc8463_ed25519_wrong_keytype(void)
 	lib = make_lib();
 	set_fixed_time(lib, 1528637909);
 
-	sign_dkim = dkim_sign(lib, JOBID, NULL, (dkim_sigkey_t) RFC8463_ED_PRIVKEY_PEM,
-	                      RFC8463_ED_SEL, RFC8463_DOMAIN,
-	                      DKIM_CANON_RELAXED, DKIM_CANON_RELAXED,
-	                      DKIM_SIGN_ED25519SHA256, -1L, &status);
+	{
+		unsigned char privkey[] = RFC8463_ED_PRIVKEY_PEM;
+		sign_dkim = dkim_sign(lib, JOBID, NULL, privkey,
+		                      RFC8463_ED_SEL, RFC8463_DOMAIN,
+		                      DKIM_CANON_RELAXED, DKIM_CANON_RELAXED,
+		                      DKIM_SIGN_ED25519SHA256, -1L, &status);
+	}
 	CHECK(sign_dkim != NULL, "ed25519 dkim_sign returned NULL");
 
 	feed_standard_headers(sign_dkim);
