@@ -2241,7 +2241,7 @@ test_api_chunk(void)
 			"\r\n"
 			BODY00;
 
-		status = dkim_chunk(sign_dkim, (u_char *) msg, strlen(msg));
+		status = dkim_chunk(sign_dkim, (const u_char *) msg, strlen(msg));
 		CHECK(status == DKIM_STAT_OK, "chunk sign failed");
 
 		status = dkim_chunk(sign_dkim, NULL, 0);

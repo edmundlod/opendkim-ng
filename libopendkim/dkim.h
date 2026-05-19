@@ -529,7 +529,7 @@ extern DKIM_STAT dkim_body __P((DKIM *dkim, const u_char *buf, size_t len));
 **  	A DKIM_STAT_* constant.
 */
 
-extern DKIM_STAT dkim_chunk __P((DKIM *dkim, u_char *buf, size_t buflen));
+extern DKIM_STAT dkim_chunk __P((DKIM *dkim, const u_char *buf, size_t buflen));
 
 /*
 **  DKIM_EOM -- identify end of body

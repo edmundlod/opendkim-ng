@@ -6067,12 +6067,12 @@ dkim_eom(DKIM *dkim, _Bool *testkey)
 */
 
 DKIM_STAT
-dkim_chunk(DKIM *dkim, u_char *buf, size_t buflen)
+dkim_chunk(DKIM *dkim, const u_char *buf, size_t buflen)
 {
 	_Bool bso;
 	DKIM_STAT status;
-	unsigned char *p;
-	unsigned char *end;
+	const unsigned char *p;
+	const unsigned char *end;
 
 	assert(dkim != NULL);
 
