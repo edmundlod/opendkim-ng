@@ -251,8 +251,8 @@ main(int argc, char **argv)
 	else
 	{
 		dkim = dkim_sign(lib, (u_char *) progname, NULL,
-		                 (u_char *) keydata, (u_char *) selector,
-		                 (u_char *) domain, hc, bc, sa, l, &status);
+		                 (u_char *) keydata, (const u_char *) selector,
+		                 (const u_char *) domain, hc, bc, sa, l, &status);
 		if (dkim == NULL)
 		{
 			fprintf(stderr, "%s: dkim_sign() failed: %s\n",
